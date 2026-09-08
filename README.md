@@ -1,71 +1,27 @@
-# GCSC Flex Terrain Demo
+# GCSC — Bouw je eigen industrieterrein
 
-Interactive Dutch-language demo console for a business-park flexibility
-control layer, built for the Provincie Zuid-Holland stand (22 September
-2026). Simulation only — see `BRIEF.md` for scope and constraints.
+Een zelfstandige, Nederlandstalige beursdemo voor de GCSC-propositie rond lokale energie- en warmtesturing op bedrijventerreinen.
 
 ## Openen
 
-Open `index.html` rechtstreeks in een browser (dubbelklikken, of
-`file://` in de adresbalk). Geen server, geen build stap, geen externe
-dependencies — alle CSS en JavaScript staan ingebed in het bestand.
+Open `index.html` rechtstreeks in een recente browser. Er is geen server, buildstap of externe dependency nodig.
 
-Getest in recente Chromium/Firefox/Safari. Aanbevolen vensterbreedte
-≥1280px (kiosk/monitor); de layout degradeert naar tablet- en
-telefoonformaat.
+## Bezoekersflow
 
-## Bediening
+1. Kies in het assetmenu een lokale asset.
+2. Sleep hem naar het bijpassende vak op het terrein, of klik/tik eerst de asset en daarna het lege vak. Met toetsenbord: selecteer met `Enter` en plaats met `Enter` op een vak.
+3. Bouw met zonnepanelen, batterij, maximaal drie laadpunten, warmtepomp en warmtebuffer.
+4. Kies `Zonpiek`, `Avondpiek` of `Netcongestie`.
+5. Klik **Optimaliseer mijn terrein** en vergelijk de lokale regelactie met de uitgangssituatie.
 
-- Kies een scenario (`Zonpiek`, `Avondpiek`, `Netcongestie`) — het
-  terreindiagram, de importbalk, de uitleg en de actielijst updaten
-  gezamenlijk.
-- Klik `Optimaliseer terrein` om de gecoördineerde besturingsactie te
-  simuleren; `Toon uitgangssituatie opnieuw` zet het scenario terug naar
-  de uitgangssituatie zodat de demo herhaald kan worden voor de
-  volgende bezoeker.
-- `Beperkte beweging` in de header schakelt alle animatie uit
-  (dash-flow op de diagramlijnen, transities op de importbalk). Dit
-  volgt ook automatisch `prefers-reduced-motion: reduce` van het
-  besturingssysteem.
+De geplaatste assets veranderen de gesimuleerde netimport en regelacties. De warmtebuffer en warmtepomp maken thermische flexibiliteit achter de meter zichtbaar. Alle waarden zijn illustratieve demo-scenario’s, geen voorspelling voor een specifiek terrein.
 
-## Bestanden
+## Verificatie
 
-- `index.html` — de volledige demo: opgemaakte HTML, ingebedde CSS en
-  browser-JavaScript. Dit is het enige bestand dat nodig is om de demo
-  te draaien.
-- `logic.js` — dezelfde besturingslogica (scenariodata, `netImport`/
-  `status`-berekening, UI-state reducer) als losstaande CommonJS-module,
-  puur om browserless getest te kunnen worden met Node's ingebouwde
-  testrunner. De code in `index.html` is een letterlijke kopie hiervan
-  (geverifieerd gelijk), niet een `<script src>`-verwijzing, zodat
-  `index.html` zelfstandig blijft werken zonder een tweede bestand te
-  hoeven laden.
-- `logic.test.js` — de bijbehorende testsuite.
-- `BRIEF.md`, `DESIGN_REVIEW.md`, `LOGIC_PLAN.md` — het spec-traject
-  waaruit deze implementatie is gebouwd (opdracht, ontwerpbesluiten,
-  besturingslogica-contract).
-
-## Tests
-
-```
+```sh
 node --test
+node /tmp/check_flex_demo.js
 ```
 
-Draait `logic.test.js` tegen `logic.js` met Node's ingebouwde
-`node:test` + `node:assert/strict` — geen browser, geen extra
-dependencies. Dit bestand is geschreven vóór `logic.js` bestond
-(test-first): de eerste run faalde met `MODULE_NOT_FOUND`, waarna
-`logic.js` is geïmplementeerd tot alle 14 tests slaagden.
-
-De tests dekken: de netto-importberekening per scenario, de
-importlimiet-invarianten (de geoptimaliseerde staat overschrijdt nooit
-de limiet; alleen de Netcongestie-baseline doet dat wél), dat de
-essentiële gebouwlast nooit een stuurvariabele is, de
-`gepauzeerd`-versus-`later`-onderscheiding bij 0 kW, determinisme
-(geen tijd/randomness-afhankelijkheid), de `getScenario`-foutcontractie,
-en de UI-state reducer (`SELECT_SCENARIO` / `OPTIMIZE` / `RESET`).
-
-Reduced-motion-gedrag, animatietiming, CSS/layout en
-touch-targetgrootte zijn bewust buiten deze testsuite gehouden — dat
-zijn visuele/DOM-aangelegenheden die geen browserless Node-test
-zinvol kan dekken.
+- `logic.test.js` bevat 31 browserloze tests voor de scenario- en assetlogica.
+- `check_flex_demo.js` controleert de syntaxis van de ingebedde JavaScript en de essentiële demo-elementen.
